@@ -19,7 +19,7 @@ pipeline {
             steps {
                 // Use the Node.js Docker image to build the app
                 script {
-                    sh "docker run --rm -v $(pwd):/app -w /app ${DOCKER_IMAGE} npm install"
+                    sh "docker run --rm -v \$(pwd):/app -w /app ${DOCKER_IMAGE} npm install"
                 }
             }
         }
