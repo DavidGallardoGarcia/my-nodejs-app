@@ -19,7 +19,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 // Use the specified Node.js version
-                docker.image(DOCKER_IMAGE).inside {
+                docker.image(params.DOCKER_IMAGE).inside {
                     sh 'npm install'
                 }
             }
@@ -29,7 +29,7 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image
-                    docker.build(APP_NAME)
+                    docker.build(params.APP_NAME)
                 }
             }
         }
