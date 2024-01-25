@@ -4,7 +4,7 @@ pipeline {
     environment {
         // Customize environment variables if needed
         NODE_VERSION = '14'
-        DOCKER_IMAGE = 'node:' + NODE_VERSION
+        DOCKER_IMAGE = "node:${NODE_VERSION}"
         APP_NAME = 'my-nodejs-app'
     }
 
