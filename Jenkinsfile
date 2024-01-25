@@ -4,7 +4,7 @@ pipeline {
     environment {
         // Define environment variables if needed
         DOCKER_IMAGE = 'node:14' // Change the Node.js version as needed
-        APP_NAME = 'my-nodejs-app'
+        APP_NAME = 'my-node-app'
     }
 
     stages {
@@ -19,9 +19,7 @@ pipeline {
             steps {
                 // Use the Node.js Docker image to build the app
                 script {
-                    docker.image(DOCKER_IMAGE).inside {
-                        sh 'npm install'
-                    }
+                    sh "docker run --rm -v $(pwd):/app -w /app ${DOCKER_IMAGE} npm install"
                 }
             }
         }
@@ -30,9 +28,7 @@ pipeline {
             steps {
                 // Run tests inside the Docker container
                 script {
-                    docker.image(DOCKER_IMAGE).inside {
-                        sh 'npm test'
-                    }
+                    sh "docker run --rm -v $(pwd):/app -w /app ${DOCKER_IMAGE} npm test"
                 }
             }
         }
@@ -41,7 +37,7 @@ pipeline {
             steps {
                 // Build Docker image for the Node.js app
                 script {
-                    docker.build(APP_NAME, '.')
+                    sh "docker build -t ${APP_NAME} ."
                 }
             }
         }
@@ -50,9 +46,7 @@ pipeline {
         //     steps {
         //         // Push Docker image to a container registry
         //         script {
-        //             docker.withRegistry('https://your-registry-url', 'your-registry-credentials') {
-        //                 docker.image(APP_NAME).push()
-        //             }
+        //             sh "docker push ${APP_NAME}"
         //         }
         //     }
         // }
