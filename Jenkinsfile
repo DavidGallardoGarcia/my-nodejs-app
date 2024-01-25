@@ -28,7 +28,7 @@ pipeline {
             steps {
                 // Run tests inside the Docker container
                 script {
-                    sh "docker run --rm -v $(pwd):/app -w /app ${DOCKER_IMAGE} npm test"
+                    sh "docker run --rm -v \$(pwd):/app -w /app ${DOCKER_IMAGE} npm test"
                 }
             }
         }
