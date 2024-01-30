@@ -1,34 +1,50 @@
 pipeline {
     agent any
-    
+
     environment {
-        DOCKER_IMAGE = 'my-node-app' // Change this to your desired Docker image name
+        DOCKER_IMAGE = 'my-nodejs-app'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Checkout your source code from your version control system
                 checkout scm
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                // Build Docker image using the provided Dockerfile
                 script {
-                    sh "docker build -t ${DOCKER_IMAGE} ."
+                    docker.build(env.DOCKER_IMAGE)
                 }
             }
         }
 
         // stage('Push Docker Image') {
         //     steps {
-        //         // Push Docker image to a container registry
         //         script {
-        //             sh "docker push ${DOCKER_IMAGE}"
+        //             docker.withRegistry('https://your-docker-registry', 'docker-credentials-id') {
+        //                 docker.image(env.DOCKER_IMAGE).push()
+        //             }
+        //         }
+        //     }
+        // }
+
+        // stage('Deploy') {
+        //     steps {
+        //         script {
+        //             sh 'docker run -p 3000:3000 -d --name your-node-app ${DOCKER_IMAGE}'
         //         }
         //     }
         // }
     }
+
+    // post {
+    //     success {
+    //         echo 'Build, push, and deployment successful!'
+    //     }
+    //     failure {
+    //         echo 'Build, push, or deployment failed!'
+    //     }
+    // }
 }
