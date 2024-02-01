@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     parameters {
-        string(name: 'DOCKER_IMAGE', defaultValue: 'my-nodejs-app', description: 'Docker image name')
-        string(name: 'DOCKER_REGISTRY', defaultValue: 'https://hub.docker.com/r/davidgallardo/nodejsapp', description: 'Docker registry URL')
+        string(name: 'DOCKER_IMAGE', defaultValue: 'davidgallardo/nodejsapp', description: 'Docker image name')
+        string(name: 'DOCKER_REGISTRY', defaultValue: 'https://hub.docker.com', description: 'Docker registry URL')
         string(name: 'DOCKER_CREDENTIALS_ID', defaultValue: 'docker-credentials', description: 'Docker credentials ID')
         booleanParam(name: 'PUSH_DOCKER_IMAGE', defaultValue: false, description: 'Push Docker image to registry')
         booleanParam(name: 'DEPLOY', defaultValue: false, description: 'Deploy Docker image')
