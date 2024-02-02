@@ -13,7 +13,7 @@ pipeline {
         DOCKERHUB_CREDENTIALS= credentials('dockerhubcredentials')     
     }
 
-    def dockerImageTag = "${params.DOCKER_IMAGE}:${BUILD_NUMBER}" 
+    def dockerImageTag 
 
     stages {
         stage('Checkout') {
@@ -43,6 +43,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
+                    dockerImageTag = "${params.DOCKER_IMAGE}:${BUILD_NUMBER}"
                     sh "sudo docker build -t ${dockerImageTag} ."
                     // docker.build(${dockerImageTag})
                     echo "Build docker image ${dockerImageTag} Completed"
