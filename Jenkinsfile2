@@ -83,7 +83,7 @@ pipeline {
             steps {
                 script {
                     input "Deploy to production?"
-                    sh "docker run -p 3000:3000 -d --name my-nodejs-app $DOCKER_IMAGE_TAG"
+                    sh "docker run -p 3000:3000 -d --name my-nodejs-app --rm $DOCKER_IMAGE_TAG"
                     echo 'Deploy Image Completed'
                 }
             }
