@@ -3,11 +3,17 @@ pipeline {
 
     parameters {
         string(name: 'DOCKER_IMAGE', defaultValue: 'davidgallardo/nodejsapp', description: 'Docker image name')
-        string(name: 'DOCKER_REGISTRY', defaultValue: 'https://hub.docker.com', description: 'Docker registry URL')
-        string(name: 'DOCKER_CREDENTIALS_ID', defaultValue: 'docker-credentials', description: 'Docker credentials ID')
+        // string(name: 'DOCKER_REGISTRY', defaultValue: 'https://hub.docker.com', description: 'Docker registry URL')
+        // string(name: 'DOCKER_CREDENTIALS_ID', defaultValue: 'docker-credentials', description: 'Docker credentials ID')
         booleanParam(name: 'PUSH_DOCKER_IMAGE', defaultValue: false, description: 'Push Docker image to registry')
         booleanParam(name: 'DEPLOY', defaultValue: false, description: 'Deploy Docker image')
     }
+
+    environment {     
+        DOCKERHUB_CREDENTIALS= credentials('dockerhubcredentials')     
+    }
+
+    def dockerImageTag = "${params.DOCKER_IMAGE}:${BUILD_NUMBER}" 
 
     stages {
         stage('Checkout') {
@@ -20,6 +26,7 @@ pipeline {
             steps {
                 script {
                     sh 'npm install'
+                    echo 'Build Completed'
                 }
             }
         }
@@ -28,6 +35,7 @@ pipeline {
             steps {
                 script {
                     echo 'Run Test'
+                    echo 'Test Completed'
                 }
             }
         }
@@ -35,22 +43,38 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build(params.DOCKER_IMAGE)
+                    sh "sudo docker build -t ${dockerImageTag} ."
+                    // docker.build(${dockerImageTag})
+                    echo "Build docker image ${dockerImageTag} Completed"
                 }
             }
         }
 
-        stage('Push Docker Image') {
-            when {
-                expression { params.PUSH_DOCKER_IMAGE }
-            }
-            steps {
-                script {
-                    docker.withRegistry(params.DOCKER_REGISTRY, params.DOCKER_CREDENTIALS_ID) {
-                        docker.image(params.DOCKER_IMAGE).push()
-                    }
-                }
-            }
+        // stage('Push Docker Image') {
+        //     when {
+        //         expression { params.PUSH_DOCKER_IMAGE }
+        //     }
+        //     steps {
+        //         script {
+        //             docker.withRegistry(params.DOCKER_REGISTRY, params.DOCKER_CREDENTIALS_ID) {
+        //                 docker.image(params.DOCKER_IMAGE).push()
+        //             }
+        //         }
+        //     }
+        // }
+
+        stage('Login to Docker Hub') {      	
+            steps{                       	
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | sudo docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'                		
+                echo 'Login Completed'      
+            }           
+        }
+
+        stage('Push Image to Docker Hub') {         
+            steps{                                            
+                sh "sudo docker push ${dockerImageTag}"           
+                echo 'Push Image Completed'       
+            }            
         }
 
         stage('Deploy') {
@@ -61,17 +85,18 @@ pipeline {
                 script {
                     input "Deploy to production?"
                     sh "docker run -p 3000:3000 -d --name my-nodejs-app ${params.DOCKER_IMAGE}"
+                    echo 'Deploy Image Completed'
                 }
             }
         }
     }
 
-    post {
-        success {
-            echo 'Build, push, and deployment successful!'
-        }
-        failure {
-            echo 'Build, push, or deployment failed!'
-        }
-    }
+    // post {
+    //     success {
+    //         echo 'Build, push, and deployment successful!'
+    //     }
+    //     failure {
+    //         echo 'Build, push, or deployment failed!'
+    //     }
+    // }
 }
