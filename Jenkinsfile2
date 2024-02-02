@@ -10,10 +10,9 @@ pipeline {
     }
 
     environment {     
-        DOCKERHUB_CREDENTIALS= credentials('dockerhubcredentials')     
+        DOCKERHUB_CREDENTIALS= credentials('dockerhubcredentials')
+        DOCKER_IMAGE_TAG = "${params.DOCKER_IMAGE}:${BUILD_NUMBER}"
     }
-
-    def dockerImageTag 
 
     stages {
         stage('Checkout') {
@@ -43,10 +42,9 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    dockerImageTag = "${params.DOCKER_IMAGE}:${BUILD_NUMBER}"
-                    sh "sudo docker build -t ${dockerImageTag} ."
+                    sh "sudo docker build -t $DOCKER_IMAGE_TAG ."
                     // docker.build(${dockerImageTag})
-                    echo "Build docker image ${dockerImageTag} Completed"
+                    echo "Build docker image $DOCKER_IMAGE_TAG Completed"
                 }
             }
         }
@@ -73,7 +71,7 @@ pipeline {
 
         stage('Push Image to Docker Hub') {         
             steps{                                            
-                sh "sudo docker push ${dockerImageTag}"           
+                sh "sudo docker push $DOCKER_IMAGE_TAG"           
                 echo 'Push Image Completed'       
             }            
         }
@@ -85,12 +83,18 @@ pipeline {
             steps {
                 script {
                     input "Deploy to production?"
-                    sh "docker run -p 3000:3000 -d --name my-nodejs-app ${params.DOCKER_IMAGE}"
+                    sh "docker run -p 3000:3000 -d --name my-nodejs-app $DOCKER_IMAGE_TAG"
                     echo 'Deploy Image Completed'
                 }
             }
         }
     }
+
+    post{
+        always {  
+            sh 'docker logout'     
+        }      
+    } 
 
     // post {
     //     success {
