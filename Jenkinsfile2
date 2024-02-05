@@ -57,14 +57,16 @@ pipeline {
             }            
         }
 
-        stage('Deploy') {
+        stage('Local Deploy') {
             when {
                 expression { params.LOCAL_DEPLOY }
             }
             steps {
-                input 'Deploy locally?'
-                sh "docker run -p 3000:3000 -d --name my-nodejs-app --rm $DOCKER_IMAGE_TAG"
-                echo 'Deploy Image Completed'
+                script {
+                    input 'Deploy locally?'
+                    sh "docker run -p 3000:3000 -d --name my-nodejs-app --rm $DOCKER_IMAGE_TAG"
+                    echo 'Deploy Image Completed'
+                }
             }
         }
     }
