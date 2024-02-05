@@ -64,6 +64,7 @@ pipeline {
             steps {
                 script {
                     input 'Deploy locally?'
+                    sh "docker rm -f my-nodejs-app"
                     sh "docker run -p 3000:3000 -d --name my-nodejs-app --rm $DOCKER_IMAGE_TAG"
                     echo 'Deploy Image Completed'
                 }
