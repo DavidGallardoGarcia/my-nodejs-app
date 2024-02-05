@@ -4,7 +4,7 @@ pipeline {
     parameters {
         string(name: 'DOCKER_IMAGE', defaultValue: 'davidgallardo/nodejsapp', description: 'Docker image name')
         booleanParam(name: 'PUSH_DOCKER_IMAGE', defaultValue: false, description: 'Push Docker image to registry')
-        booleanParam(name: 'DEPLOY', defaultValue: false, description: 'Deploy Docker image')
+        booleanParam(name: 'LOCAL_DEPLOY', defaultValue: false, description: 'Deploy Docker image locally')
     }
 
     environment {     
@@ -21,19 +21,15 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                script {
-                    sh 'npm install'
-                    echo 'Build Completed'
-                }
+                sh 'npm install'
+                echo 'Build Completed'
             }
         }
 
         stage('Run Test') {
             steps {
-                script {
-                    echo 'Run Test'
-                    echo 'Test Completed'
-                }
+                echo 'Run Test'
+                echo 'Test Completed'
             }
         }
 
@@ -46,10 +42,8 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    sh "docker build -t $DOCKER_IMAGE_TAG ."
-                    echo "Build docker image $DOCKER_IMAGE_TAG Completed"
-                }
+                sh "docker build -t $DOCKER_IMAGE_TAG ."
+                echo "Build docker image $DOCKER_IMAGE_TAG Completed"
             }
         }
 
@@ -65,14 +59,12 @@ pipeline {
 
         stage('Deploy') {
             when {
-                expression { params.DEPLOY }
+                expression { params.LOCAL_DEPLOY }
             }
             steps {
-                script {
-                    input "Deploy to production?"
-                    sh "docker run -p 3000:3000 -d --name my-nodejs-app --rm $DOCKER_IMAGE_TAG"
-                    echo 'Deploy Image Completed'
-                }
+                input 'Deploy locally?'
+                sh "docker run -p 3000:3000 -d --name my-nodejs-app --rm $DOCKER_IMAGE_TAG"
+                echo 'Deploy Image Completed'
             }
         }
     }
