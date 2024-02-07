@@ -6,7 +6,7 @@ pipeline {
         booleanParam(name: 'LOCAL_DEPLOY', defaultValue: false, description: 'Deploy Docker image locally')
     }
 
-    environment {     
+    environment {
         DOCKERHUB_CREDENTIALS= credentials('dockerhubcredentials')
         DOCKER_IMAGE = 'davidgallardo/nodejsapp'
         DOCKER_IMAGE_TAG = "$DOCKER_IMAGE:${BUILD_NUMBER}"
@@ -33,11 +33,11 @@ pipeline {
             }
         }
 
-        stage('Login to Docker Hub') {      	
-            steps{                       	
+        stage('Login to Docker Hub') {
+            steps{
                 sh "echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin"
-                echo 'Login Completed'      
-            }           
+                echo 'Login Completed'
+            }
         }
 
         stage('Build Docker Image') {
@@ -47,14 +47,14 @@ pipeline {
             }
         }
 
-        stage('Push Image to Docker Hub') {         
+        stage('Push Image to Docker Hub') {
             when {
                 expression { params.PUSH_DOCKER_IMAGE }
             }
-            steps{                                            
-                sh "docker push $DOCKER_IMAGE_TAG"           
-                echo 'Push Image Completed'       
-            }            
+            steps{
+                sh "docker push $DOCKER_IMAGE_TAG"
+                echo 'Push Image Completed'
+            }
         }
 
         stage('Local Deploy') {
@@ -82,9 +82,10 @@ pipeline {
 
     post{
         always {
-            sh 'docker logout'     
-        }      
-    } 
+            sh "docker images -q $DOCKER_IMAGE | tail -n +4 | xargs docker rmi"
+            sh 'docker logout'
+        }
+    }
 
     // post {
     //     success {
