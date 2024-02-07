@@ -2,14 +2,14 @@ pipeline {
     agent any
 
     parameters {
-        string(name: 'DOCKER_IMAGE', defaultValue: 'davidgallardo/nodejsapp', description: 'Docker image name')
         booleanParam(name: 'PUSH_DOCKER_IMAGE', defaultValue: false, description: 'Push Docker image to registry')
         booleanParam(name: 'LOCAL_DEPLOY', defaultValue: false, description: 'Deploy Docker image locally')
     }
 
     environment {     
         DOCKERHUB_CREDENTIALS= credentials('dockerhubcredentials')
-        DOCKER_IMAGE_TAG = "${params.DOCKER_IMAGE}:${BUILD_NUMBER}"
+        DOCKER_IMAGE = 'davidgallardo/nodejsapp'
+        DOCKER_IMAGE_TAG = "$DOCKER_IMAGE:${BUILD_NUMBER}"
     }
 
     stages {
@@ -81,7 +81,7 @@ pipeline {
     }
 
     post{
-        always {  
+        always {
             sh 'docker logout'     
         }      
     } 
