@@ -91,8 +91,8 @@ pipeline {
                     def serviceYaml = 'kubernetes/node-svc.yaml'
 
                     echo "Deploying resources"
-                    sh "envsubst < '${deploymentYaml}' | kubectl apply -f -"
-                    sh "kubectl apply -f '${serviceYaml}'"
+                    sh "envsubst < '${deploymentYaml}' | kubectl --kubeconfig=.kube/config apply -f -"
+                    sh "kubectl --kubeconfig=.kube/config apply -f '${serviceYaml}'"
                 }
             }
         }
