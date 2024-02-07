@@ -9,6 +9,7 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS= credentials('dockerhubcredentials')
+        KUBECONFIG = credentials('kubeconfigcredential')
         DOCKER_IMAGE = 'davidgallardo/nodejsapp'
         DOCKER_IMAGE_TAG = "$DOCKER_IMAGE:${BUILD_NUMBER}"
     }
@@ -91,8 +92,8 @@ pipeline {
                     def serviceYaml = 'kubernetes/node-svc.yaml'
 
                     echo "Deploying resources"
-                    sh "envsubst < '${deploymentYaml}' | kubectl --kubeconfig=.kube/config apply -f -"
-                    sh "kubectl --kubeconfig=.kube/config apply -f '${serviceYaml}'"
+                    sh "envsubst < '${deploymentYaml}' | kubectl --kubeconfig=$KUBECONFIG apply -f -"
+                    sh "kubectl --kubeconfig=$KUBECONFIG apply -f '${serviceYaml}'"
                 }
             }
         }
