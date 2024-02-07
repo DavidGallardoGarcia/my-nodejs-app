@@ -4,6 +4,7 @@ pipeline {
     parameters {
         booleanParam(name: 'PUSH_DOCKER_IMAGE', defaultValue: false, description: 'Push Docker image to registry')
         booleanParam(name: 'LOCAL_DEPLOY', defaultValue: false, description: 'Deploy Docker image locally')
+        booleanParam(name: 'K8S_DEPLOY', defaultValue: false, description: 'Deploy in Kubernetes Minikube')
     }
 
     environment {
@@ -75,6 +76,23 @@ pipeline {
                     
                     sh "docker run -p 3000:3000 -d --name '${containerName}' --rm $DOCKER_IMAGE_TAG"
                     echo 'Deploy Image Completed'
+                }
+            }
+        }
+
+        stage('K8S Deploy') {
+            when {
+                expression { params.K8S_DEPLOY }
+            }
+            steps {
+                script {
+                    input 'Deploy in minikube?'
+                    def deploymentYaml = 'kubernetes/node-deployment.yaml'
+                    def serviceYaml = 'kubernetes/node-svc.yaml'
+
+                    echo "Deploying resources"
+                    sh "envsubst < '${deploymentYaml}' | kubectl apply -f -"
+                    sh "kubectl apply -f '${serviceYaml}'"
                 }
             }
         }
