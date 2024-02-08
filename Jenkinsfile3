@@ -1,4 +1,4 @@
-@Library('github.com/DavidGallardoGarcia/my-jenkins-library.git') _
+@Library('github.com/DavidGallardoGarcia/my-jenkins-library') _
 
 pipeline {
     agent any
