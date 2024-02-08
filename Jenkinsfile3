@@ -46,7 +46,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                buildDockerImage()
+                buildDockerImage(env.DOCKER_IMAGE_TAG)
             }
         }
 
