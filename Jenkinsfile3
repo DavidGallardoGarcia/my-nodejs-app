@@ -1,0 +1,98 @@
+@Library('github.com/DavidGallardoGarcia/my-jenkins-library.git') _
+
+pipeline {
+    agent any
+
+    parameters {
+        booleanParam(name: 'PUSH_DOCKER_IMAGE', defaultValue: false, description: 'Push Docker image to registry')
+        booleanParam(name: 'LOCAL_DEPLOY', defaultValue: false, description: 'Deploy Docker image locally')
+        booleanParam(name: 'K8S_DEPLOY', defaultValue: false, description: 'Deploy in Kubernetes Minikube')
+    }
+
+    environment {
+        DOCKERHUB_CREDENTIALS= credentials('dockerhubcredentials')
+        KUBECONFIG = credentials('kubeconfigcredential')
+        DOCKER_IMAGE = 'davidgallardo/nodejsapp-library'
+        DOCKER_IMAGE_TAG = "$DOCKER_IMAGE:${BUILD_NUMBER}"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+                echo 'Build Completed'
+            }
+        }
+
+        stage('Run Test') {
+            steps {
+                echo 'Run Test'
+                echo 'Test Completed'
+            }
+        }
+
+        stage('Login to Docker Hub') {
+            steps{
+                sh "echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin"
+                echo 'Login Completed'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                buildDockerImage()
+            }
+        }
+
+        stage('Push Image to Docker Hub') {
+            steps {
+                pushImageToDockerHub()
+            }
+        }
+
+        stage('Local Deploy') {
+            steps {
+                localDeploy()
+            }
+        }
+
+        stage('K8S Deploy') {
+            when {
+                expression { params.K8S_DEPLOY }
+            }
+            steps {
+                script {
+                    input 'Deploy in minikube?'
+                    def deploymentYaml = 'kubernetes/node-deployment.yaml'
+                    def serviceYaml = 'kubernetes/node-svc.yaml'
+
+                    echo "Deploying resources"
+                    sh "envsubst < '${deploymentYaml}' | kubectl --kubeconfig=$KUBECONFIG apply -f -"
+                    sh "kubectl --kubeconfig=$KUBECONFIG apply -f '${serviceYaml}'"
+                }
+            }
+        }
+    }
+
+    post{
+        always {
+            sh "docker images -q $DOCKER_IMAGE | tail -n +4 | xargs docker rmi"
+            sh 'docker logout'
+        }
+    }
+
+    // post {
+    //     success {
+    //         echo 'Build, push, and deployment successful!'
+    //     }
+    //     failure {
+    //         echo 'Build, push, or deployment failed!'
+    //     }
+    // }
+}
