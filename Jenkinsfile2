@@ -60,7 +60,7 @@ pipeline {
             steps{
                 // sh "docker push $DOCKER_IMAGE_TAG"
                 script {
-                    docker.withRegistry("https://$DOCKER_REGISTRY", 'docker-hub-credentials') {
+                    docker.withRegistry("https://$DOCKER_REGISTRY", '$DOCKERHUB_CREDENTIALS') {
                             docker.image(DOCKER_IMAGE_TAG).push()
                         }
                     echo 'Push Image Completed'
