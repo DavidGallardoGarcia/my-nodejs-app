@@ -46,8 +46,10 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 // sh "docker build -t $DOCKER_IMAGE_TAG ."
-                docker.build(DOCKER_IMAGE_TAG)
-                echo "Build docker image $DOCKER_IMAGE_TAG Completed"
+                script {
+                    docker.build(DOCKER_IMAGE_TAG)
+                    echo "Build docker image $DOCKER_IMAGE_TAG Completed"
+                }
             }
         }
 
@@ -57,10 +59,12 @@ pipeline {
             }
             steps{
                 // sh "docker push $DOCKER_IMAGE_TAG"
-                docker.withRegistry("https://$DOCKER_REGISTRY", 'docker-hub-credentials') {
-                        docker.image(DOCKER_IMAGE_TAG).push()
-                    }
-                echo 'Push Image Completed'
+                script {
+                    docker.withRegistry("https://$DOCKER_REGISTRY", 'docker-hub-credentials') {
+                            docker.image(DOCKER_IMAGE_TAG).push()
+                        }
+                    echo 'Push Image Completed'
+                }
             }
         }
 
