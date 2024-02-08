@@ -82,7 +82,7 @@ pipeline {
 
     post{
         always {
-            sh "docker images -q $DOCKER_IMAGE | tail -n +4 | xargs docker rmi"
+            // sh "docker images -q $DOCKER_IMAGE | tail -n +4 | xargs docker rmi"
             sh 'docker logout'
         }
     }
