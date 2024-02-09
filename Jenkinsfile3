@@ -81,13 +81,7 @@ pipeline {
             }
             steps {
                 script {
-                    input 'Deploy in minikube?'
-                    def deploymentYaml = 'kubernetes/node-deployment.yaml'
-                    def serviceYaml = 'kubernetes/node-svc.yaml'
-
-                    echo "Deploying resources"
-                    sh "envsubst < '${deploymentYaml}' | kubectl --kubeconfig=$KUBECONFIG apply -f -"
-                    sh "kubectl --kubeconfig=$KUBECONFIG apply -f '${serviceYaml}'"
+                    dockerFunctions.k8sDeploy(DOCKER_IMAGE_TAG, KUBECONFIG)
                 }
             }
         }
