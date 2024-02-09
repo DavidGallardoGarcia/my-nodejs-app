@@ -47,7 +47,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    buildDockerImage(DOCKER_IMAGE_TAG)
+                    dockerFunctions.buildDockerImage(DOCKER_IMAGE_TAG)
                 }
             }
         }
@@ -57,7 +57,7 @@ pipeline {
                 expression { params.PUSH_DOCKER_IMAGE }
             }
             steps {
-                pushDockerImage(DOCKER_IMAGE_TAG)
+                dockerFunctions.pushDockerImage(DOCKER_IMAGE_TAG)
             }
         }
 
@@ -68,7 +68,7 @@ pipeline {
             steps {
                 script {
                     input 'Deploy locally?'
-                    localDeployDockerImage(DOCKER_IMAGE_TAG)
+                    dockerFunctions.localDeployDockerImage(DOCKER_IMAGE_TAG)
                 }
             }
         }
