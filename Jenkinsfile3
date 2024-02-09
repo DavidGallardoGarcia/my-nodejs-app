@@ -46,7 +46,11 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                buildDockerImage(env.DOCKER_IMAGE_TAG)
+                script {
+                    def buildScript = new myjenkinslibrary.buildDockerImage()
+                    buildScript.call(env.DOCKER_IMAGE_TAG)
+                    // buildDockerImage(env.DOCKER_IMAGE_TAG)
+                }
             }
         }
 
