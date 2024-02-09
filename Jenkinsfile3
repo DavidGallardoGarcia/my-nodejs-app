@@ -57,7 +57,7 @@ pipeline {
                 expression { params.PUSH_DOCKER_IMAGE }
             }
             steps {
-                pushImageToDockerHub(DOCKER_IMAGE_TAG)
+                pushDockerImage(DOCKER_IMAGE_TAG)
             }
         }
 
@@ -68,7 +68,7 @@ pipeline {
             steps {
                 script {
                     input 'Deploy locally?'
-                    localDeploy(DOCKER_IMAGE_TAG)
+                    localDeployDockerImage(DOCKER_IMAGE_TAG)
                 }
             }
         }
