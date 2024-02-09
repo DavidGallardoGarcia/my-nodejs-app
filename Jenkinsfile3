@@ -62,8 +62,14 @@ pipeline {
         }
 
         stage('Local Deploy') {
+            when {
+                expression { params.LOCAL_DEPLOY }
+            }
             steps {
-                localDeploy()
+                script {
+                    input 'Deploy locally?'
+                    localDeploy()
+                }
             }
         }
 
