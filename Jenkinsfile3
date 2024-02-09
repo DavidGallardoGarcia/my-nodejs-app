@@ -53,8 +53,11 @@ pipeline {
         }
 
         stage('Push Image to Docker Hub') {
+            when {
+                expression { params.PUSH_DOCKER_IMAGE }
+            }
             steps {
-                pushImageToDockerHub()
+                pushImageToDockerHub(DOCKER_IMAGE_TAG)
             }
         }
 
