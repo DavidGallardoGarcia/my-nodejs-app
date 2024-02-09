@@ -57,7 +57,9 @@ pipeline {
                 expression { params.PUSH_DOCKER_IMAGE }
             }
             steps {
-                dockerFunctions.pushDockerImage(DOCKER_IMAGE_TAG)
+                script {
+                    dockerFunctions.pushDockerImage(DOCKER_IMAGE_TAG)
+                }
             }
         }
 
