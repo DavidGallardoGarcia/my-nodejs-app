@@ -68,7 +68,7 @@ pipeline {
             steps {
                 script {
                     input 'Deploy locally?'
-                    localDeploy()
+                    localDeploy(DOCKER_IMAGE_TAG)
                 }
             }
         }
