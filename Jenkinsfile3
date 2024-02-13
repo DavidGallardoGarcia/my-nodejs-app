@@ -14,7 +14,6 @@ pipeline {
         KUBECONFIG = credentials('kubeconfigcredential')
         DOCKER_IMAGE = 'davidgallardo/nodejsapp-library'
         DOCKER_IMAGE_TAG = "$DOCKER_IMAGE:${BUILD_NUMBER}"
-        CONTAINER_NAME = 'my-nodejs-app'
     }
 
     stages {
@@ -71,7 +70,7 @@ pipeline {
             steps {
                 script {
                     input 'Deploy locally?'
-                    dockerFunctions.localDeployDockerImage(DOCKER_IMAGE_TAG, CONTAINER_NAME)
+                    dockerFunctions.localDeployDockerImage(DOCKER_IMAGE_TAG)
                 }
             }
         }
